@@ -1,0 +1,19 @@
+version: 0.9.0
+data_loading: FALSE
+data_loading_header: TRUE
+data_ignore:
+cache_loading: FALSE
+recursive_loading: FALSE
+munging: FALSE
+logging: FALSE
+logging_level: INFO
+load_libraries: TRUE
+libraries: purrr, dplyr, tidyr, tibble, stringr, stringi, 
+  lubridate, kableExtra, tableone, openxlsx, haven, nephro, 
+  hfmisc, zoo
+as_factors: FALSE
+tables_type: tibble
+attach_internal_libraries: FALSE
+cache_loaded_data: TRUE
+sticky_variables: NONE
+
