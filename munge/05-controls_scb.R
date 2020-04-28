@@ -12,9 +12,9 @@ kontroller <- inner_join(rsdata %>% select(LopNr, shf_indexdtm, shf_sex, shf_age
 
 
 rsdata <- bind_rows(
-  rsdata %>% 
-    mutate(casecontrol = "Case"), 
-  kontroller %>% 
+  rsdata %>%
+    mutate(casecontrol = "Case"),
+  kontroller %>%
     mutate(casecontrol = "Control") %>%
     select(LopNrcase, LopNr, shf_indexdtm, shf_sex, shf_age, casecontrol)
 ) %>%

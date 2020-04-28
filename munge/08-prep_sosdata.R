@@ -8,10 +8,14 @@ svall <- bind_rows(
   select(-starts_with("OPD"), -KON, -ALDER, -Fall, -VTID, -UTSATT, -INDATUMA, -UTDATUMA)
 
 svall <- svall %>%
-  rename_at(vars(starts_with("op")), 
-            list(~ toupper(.))) %>%
-  rename_at(vars(starts_with("EKOD")), 
-            list(~ tolower(.))) 
+  rename_at(
+    vars(starts_with("op")),
+    list(~ toupper(.))
+  ) %>%
+  rename_at(
+    vars(starts_with("EKOD")),
+    list(~ tolower(.))
+  )
 
 svall <- prep_sosdata(svall, utdatum = FALSE)
 
@@ -62,7 +66,8 @@ svalllink <- svalllink %>%
 svalllink <- bind_rows(
   svall2 %>% filter(is.na(link)) %>% mutate(sos_hosplinked = 0),
   svalllink %>% mutate(sos_hosplinked = 1)
-) %>% select(-link, -link2, -n, -sosdtm) %>%
+) %>%
+  select(-link, -link2, -n, -sosdtm) %>%
   mutate(AR = year(UTDATUM))
 
 # koll <- svalllink %>% filter(LopNr == "100474")
@@ -76,10 +81,14 @@ ovall <- bind_rows(
   select(-KON, -ALDER, -Fall, -INDATUMA)
 
 ovall <- ovall %>%
-  rename_at(vars(starts_with("op")), 
-            list(~ toupper(.))) %>%
-  rename_at(vars(starts_with("EKOD")), 
-            list(~ tolower(.))) 
+  rename_at(
+    vars(starts_with("op")),
+    list(~ toupper(.))
+  ) %>%
+  rename_at(
+    vars(starts_with("EKOD")),
+    list(~ tolower(.))
+  )
 
 # koll <- ovall %>% filter(is.na(INDATUM)) %>% select(AR, INDATUMA)
 

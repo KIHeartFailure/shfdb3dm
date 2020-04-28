@@ -10,10 +10,21 @@ ProjectTemplate::reload.project(
   munging = TRUE
 )
 
-#ProjectTemplate::cache("flow")
-#ProjectTemplate::cache("ncontrols")
-#ProjectTemplate::cache("rsdata")
-#ProjectTemplate::cache("imp.org")
-#ProjectTemplate::cache("noimpvars")
+# For webb only
 
-# save to RData, txt. numeric and factor. Also flow and ncontrols for webbsite
+save(file = "./data/rsdata_for_webb.RData", list = c("rsdata", "flow", "ncontrols", "outcommeta", "ccimeta", "deathmeta"))
+
+# Version number
+
+rsdata300 <- rsdata
+rsdatanum300 <- rsdatanum
+
+# RData
+
+save(file = "./data/v300/rsdata300.RData", list = c("rsdata300"))
+save(file = "./data/v300/rsdatanum300.RData", list = c("rsdatanum300"))
+
+# Txt
+
+write.table(rsdata300, file = "./data/v300/rsdata300.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(rsdatanum300, file = "./data/v300/rsdatanum300.txt", quote = FALSE, sep = "\t", row.names = FALSE)

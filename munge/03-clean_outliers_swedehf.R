@@ -15,11 +15,11 @@ rsdata <- rsdata %>%
     shf_heartrate = clean_outliers(shf_heartrate, 20, 300),
     shf_hb = clean_outliers(shf_hb, 20, 250),
     shf_potassium = clean_outliers(shf_potassium, 1.5, 9.9),
-    shf_sodium = clean_outliers(shf_sodium, 100, 200), 
+    shf_sodium = clean_outliers(shf_sodium, 100, 200),
     shf_creatinine = clean_outliers(shf_creatinine, 40, 2000),
-    #shf_gfrckdepi derived from other vars with limits,
+    # shf_gfrckdepi derived from other vars with limits,
     shf_ntpropbnp = clean_outliers(shf_ntpropbnp, 5, 288888),
-    shf_transferrin = clean_outliers(shf_transferrin, 1, 100), 
-    shf_ferritin = clean_outliers(shf_ferritin, 1, 1000), 
+    shf_transferrin = clean_outliers(shf_transferrin, 1, 100),
+    shf_ferritin = clean_outliers(shf_ferritin, 1, 1000),
     shf_qrs = clean_outliers(shf_qrs, 50, 250)
   )

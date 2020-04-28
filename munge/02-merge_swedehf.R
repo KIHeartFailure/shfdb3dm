@@ -22,7 +22,7 @@ yncomb <- function(oldvar, newvar) {
   )
   combvar <- ynfac(combvar)
 }
-  
+
 rsdata <- rsdata %>%
   #mutate( # change to transmute when finished checking
   transmute(
@@ -32,7 +32,7 @@ rsdata <- rsdata %>%
       TRUE ~ source
     ),
     shf_source = factor(shf_source, labels = c("Old SHF", "New SHF migrated from old SHF", "New SHF")),
-    
+
     shf_indexdtm = coalesce(DTMUT, DATE_DISCHARGE, DTMIN, d_DATE_FOR_ADMISSION),
     shf_indexyear = year(shf_indexdtm),
     shf_sex = case_when(
@@ -70,28 +70,28 @@ rsdata <- rsdata %>%
     # Om en man dricker mer än 4 standardglas vid ett och samma tillfälle
     # Om en kvinna dricker mer än 3 standardglas vid ett och samma tillfälle
 
-    #tmp_alcohol = case_when(
+    # tmp_alcohol = case_when(
     #  ALKOHOL %in% c(0, 1, 2) | L_ALCOHOL %in% c("FORMER_PROBLEMATIC", "NEVER", "NORMAL") ~ 0,
     #  ALKOHOL == 3 | L_ALCOHOL == "PROBLEMATIC" ~ 1
-    #),
-    #tmp_alcohol_vecka = case_when(
+    # ),
+    # tmp_alcohol_vecka = case_when(
     #  ALKOHOLVECKA %in% c(0, 1, 2) | ALKOHOLVECKA == 3 & shf_sex == "male" |
     #    ALCOHOL_STD_GLASS_PER_WEEK %in% c("LESS_THAN_ONE", "ONE_TO_FOUR", "FIVE_TO_NINE") |
     #    ALCOHOL_STD_GLASS_PER_WEEK == "TEN_TO_FOURTEEN" & shf_sex == "male" ~ 0,
     #  ALKOHOLVECKA == 4 | ALKOHOLVECKA == 3 & shf_sex == "female" |
     #    ALCOHOL_STD_GLASS_PER_WEEK == "FIFTEEN_OR_MORE" |
     #    ALCOHOL_STD_GLASS_PER_WEEK == "TEN_TO_FOURTEEN" & shf_sex == "female" ~ 1
-    #),
-    #tmp_alcohol_tillfalle = case_when(
+    # ),
+    # tmp_alcohol_tillfalle = case_when(
     #  ALKOHOLTILLFALLE %in% c(0, 1, 2) |
     #    ALCOHOL_MORE_THAN_5_PER_TIME %in% c("EACH_MONTH", "LESS_THAN_EACH_MONTH", "NEVER") ~ 0,
     #  ALKOHOLTILLFALLE %in% c(3, 4) |
     #    ALCOHOL_MORE_THAN_5_PER_TIME %in% c("EACH_WEEK", "DAILY") ~ 1
-    #),
-    #shf_alcohol = case_when(
+    # ),
+    # shf_alcohol = case_when(
     #  tmp_alcohol == 1 | tmp_alcohol_vecka == 1 | tmp_alcohol_tillfalle == 1 ~ "Risk",
     #  tmp_alcohol == 0 | tmp_alcohol_vecka == 0 | tmp_alcohol_tillfalle == 0 ~ "Normal"
-    #),
+    # ),
     tmp_timedurationhf = d_DATE_FOR_ADMISSION - DATE_FOR_DIAGNOSIS_HF,
     tmp_timedurationhf2 = case_when(
       tmp_timedurationhf < 6 * 30.5 ~ "LESS_THAN_6_MONTHS",
@@ -124,10 +124,10 @@ rsdata <- rsdata %>%
       d_lvefprocent == 4 | LVEF_SEMIQUANTITATIVE == "SEVERE" | LVEF_PERCENT < 30 ~ 4
     ),
     shf_ef = factor(shf_ef, labels = c(">=50", "40-49", "30-39", "<30")),
-    
+
     shf_weight = coalesce(WEIGHT, VIKT),
     shf_height = coalesce(HEIGHT, LANGD),
-    shf_bmi = round(shf_weight / (shf_height / 100) ^ 2, 1),
+    shf_bmi = round(shf_weight / (shf_height / 100)^2, 1),
 
     # laboratory
     shf_bpsys = coalesce(BP_SYSTOLIC, BTSYSTOLISKT),
@@ -161,7 +161,7 @@ rsdata <- rsdata %>%
       TRUE ~ 0 # same as: DIURETIKA == 0 | LOOP_DIUR == "NO" | THIAZIDE_OR_OTHER_DIURETIC == "NO" ~ "No"
     ),
     shf_diuretics = ynfac(shf_diuretics),
-    
+
     shf_loopdiuretics = case_when(
       (is.na(DIURETIKA) | shf_indexyear < 2011) & shf_source == "Old SHF" |
         (is.na(LOOP_DIUR) | shf_indexyear < 2011) & shf_source == "New SHF migrated from old SHF" |
@@ -171,7 +171,7 @@ rsdata <- rsdata %>%
       TRUE ~ 0 # same as: DIURETIKA %in% c(0, 2) | LOOP_DIUR %in% c("NO", "THIAZIDES") ~ "No"
     ),
     shf_loopdiuretics = ynfac(shf_loopdiuretics),
-    
+
     shf_loopdiureticdose = if_else(!is.na(shf_loopdiuretics) & shf_loopdiuretics == "Yes",
       coalesce(
         LOOP_DIUR_DOSE_BUMETANID,
@@ -236,7 +236,7 @@ rsdata <- rsdata %>%
       TRUE ~ 0
     ),
     shf_ras = ynfac(shf_ras),
-    
+
     shf_bbl = yncomb(BETABLOCKERARE, BETA_BLOCKER),
     shf_bblsub = case_when(
       is.na(shf_bbl) | shf_bbl == "No" ~ NA_character_,
@@ -277,7 +277,7 @@ rsdata <- rsdata %>%
       ANTIKOAGULANTIA == 1 | ANTICOAGULANT %in% c("YES", "NOAK", "WARAN") ~ 1
     ),
     shf_anticoagulantia = ynfac(shf_anticoagulantia),
-    
+
     shf_statin = yncomb(STATINER, STATIN),
     shf_nitrate = yncomb(NITRATER, LONG_ACTING_NITRATE),
 
@@ -292,8 +292,10 @@ rsdata <- rsdata %>%
       DEVICETERAPI == 3 | DEVICE_THERAPY == "CRT_D" ~ 3,
       DEVICETERAPI == 4 | DEVICE_THERAPY == "ICD" ~ 4
     ),
-    shf_device = factor(shf_device, labels = c("No", "Pacemaker", 
-                                               "CRT", "CRT & ICD", "ICD")),
+    shf_device = factor(shf_device, labels = c(
+      "No", "Pacemaker",
+      "CRT", "CRT & ICD", "ICD"
+    )),
     # shf_pacemaker = case_when(
     #  is.na(DEVICETERAPI) & is.na(DEVICE_THERAPY) ~ NA_character_,
     #  DEVICETERAPI == 1 | DEVICE_THERAPY == "PACEMAEKER" ~ "Yes",
@@ -316,17 +318,19 @@ rsdata <- rsdata %>%
       RONTGEN == 3 | CHEST_X_RAY == "CARDIOMEGALY" ~ 3,
       RONTGEN == 4 | CHEST_X_RAY == "PULMONARY_CONGESTION_AND_CARDIOMEGALY" ~ 4,
     ),
-    shf_xray = factor(shf_xray, labels = c("No", "Normal", "Pulmonary congestion", 
-                                           "Cardiomegaly", 
-                                           "Pulmonary congestion & cardiomegaly")),
-    
+    shf_xray = factor(shf_xray, labels = c(
+      "No", "Normal", "Pulmonary congestion",
+      "Cardiomegaly",
+      "Pulmonary congestion & cardiomegaly"
+    )),
+
     # comorbidities
     shf_diabetes = case_when(
       DIABETES_old == 0 | DIABETES == "NO" ~ 0,
       DIABETES_old %in% c(1, 2, 3, 4, 5) | DIABETES %in% c("TYPE_1", "TYPE_2") ~ 1
     ),
     shf_diabetes = ynfac(shf_diabetes),
-    
+
     shf_hypertension = yncomb(HYPERTONI, HYPERTENSION),
     shf_af = yncomb(FORMAKSFLIMMER, ATRIAL_FIBRILLATION_FLUTTER),
     shf_lungdisease = yncomb(LUNGSJUKDOM, CHRONIC_LUNG_DISEASE),
@@ -338,14 +342,14 @@ rsdata <- rsdata %>%
       TRUE ~ 1
     ),
     shf_revascularization = ynfac(shf_revascularization),
-    
+
     shf_valvesurgery = case_when(
-      is.na(KLAFFOP) & is.na(HEART_VALVE_SURGERY) ~ NA_real_, 
+      is.na(KLAFFOP) & is.na(HEART_VALVE_SURGERY) ~ NA_real_,
       KLAFFOP == 0 | HEART_VALVE_SURGERY == "NO" ~ 0,
       TRUE ~ 1
     ),
     shf_valvesurgery = ynfac(shf_valvesurgery),
-    
+
     shf_ekg = case_when(
       EKGSENAST == 1 | EKG_RHYTHM == "SINUS_RHYTHM" ~ 1,
       EKGSENAST == 2 | EKG_RHYTHM == "ATRIAL_FIBRILLATION" ~ 2,
@@ -360,8 +364,8 @@ rsdata <- rsdata %>%
       UPPF_VARDNIVA == 2 | FOLLOWUP_HC_LEVEL == "PRIMARY_CARE" ~ 2,
       UPPF_VARDNIVA == 3 | FOLLOWUP_HC_LEVEL == "OTHER" ~ 3
     ),
-    shf_followuplocation = factor(shf_followuplocation, c("Hospital", "Primary care", "Other")),
-    
+    shf_followuplocation = factor(shf_followuplocation, labels = c("Hospital", "Primary care", "Other")),
+
     # outcomes
     shf_deathdtm = coalesce(d_befdoddtm, befdoddtm),
     shf_deathdtm = if_else(shf_deathdtm > ymd("2018-12-31"), as.Date(NA), shf_deathdtm)
