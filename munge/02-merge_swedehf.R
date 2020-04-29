@@ -151,7 +151,7 @@ rsdata <- rsdata %>%
     shf_lbbb = yncomb(LBBB, LEFT_BRANCH_BLOCK),
 
     # treatments
-    shf_diuretics = case_when(
+    shf_diuretic = case_when(
       is.na(DIURETIKA) & shf_source == "Old SHF" |
         is.na(LOOP_DIUR) & shf_source == "New SHF migrated from old SHF" |
         (is.na(LOOP_DIUR) | is.na(THIAZIDE_OR_OTHER_DIURETIC)) & shf_source == "New SHF" ~ NA_real_,
@@ -160,9 +160,9 @@ rsdata <- rsdata %>%
         THIAZIDE_OR_OTHER_DIURETIC == "YES" ~ 1,
       TRUE ~ 0 # same as: DIURETIKA == 0 | LOOP_DIUR == "NO" | THIAZIDE_OR_OTHER_DIURETIC == "NO" ~ "No"
     ),
-    shf_diuretics = ynfac(shf_diuretics),
+    shf_diuretic = ynfac(shf_diuretic),
 
-    shf_loopdiuretics = case_when(
+    shf_loopdiuretic = case_when(
       (is.na(DIURETIKA) | shf_indexyear < 2011) & shf_source == "Old SHF" |
         (is.na(LOOP_DIUR) | shf_indexyear < 2011) & shf_source == "New SHF migrated from old SHF" |
         is.na(LOOP_DIUR) & shf_source == "New SHF" ~ NA_real_,
@@ -170,9 +170,9 @@ rsdata <- rsdata %>%
         LOOP_DIUR %in% c("LOOP_DIURETIC", "LOOP_DIURETIC_AND_THIAZIDES", "YES") ~ 1,
       TRUE ~ 0 # same as: DIURETIKA %in% c(0, 2) | LOOP_DIUR %in% c("NO", "THIAZIDES") ~ "No"
     ),
-    shf_loopdiuretics = ynfac(shf_loopdiuretics),
+    shf_loopdiuretic = ynfac(shf_loopdiuretic),
 
-    shf_loopdiureticdose = if_else(!is.na(shf_loopdiuretics) & shf_loopdiuretics == "Yes",
+    shf_loopdiureticdose = if_else(!is.na(shf_loopdiuretic) & shf_loopdiuretic == "Yes",
       coalesce(
         LOOP_DIUR_DOSE_BUMETANID,
         LOOP_DIUR_DOSE_FUROSEMID,
@@ -182,7 +182,7 @@ rsdata <- rsdata %>%
       ), NA_real_
     ),
     shf_loopdiureticusage = case_when(
-      is.na(shf_loopdiuretics) | shf_loopdiuretics == "No" ~ NA_character_,
+      is.na(shf_loopdiuretic) | shf_loopdiuretic == "No" ~ NA_character_,
       DIURETIKA_DOSTYP == 0 | LOOP_DIUR_USAGE == "DAY" ~ "Daily",
       DIURETIKA_DOSTYP == 1 | LOOP_DIUR_USAGE == "ONLY_WHEN_NECESSARY" ~ "When necessary"
     ),
@@ -336,12 +336,12 @@ rsdata <- rsdata %>%
     shf_lungdisease = yncomb(LUNGSJUKDOM, CHRONIC_LUNG_DISEASE),
     shf_valvedisease = yncomb(KARVOC, HEART_VALVE_DISEASE),
     shf_dcm = yncomb(DCM, DILATED_CARDIOMYOPATHY),
-    shf_revascularization = case_when(
+    shf_revasc = case_when(
       is.na(REVASKULARISERING) & is.na(REVASCULARIZATION) ~ NA_real_,
       REVASKULARISERING == 0 | REVASCULARIZATION == "NO" ~ 0,
       TRUE ~ 1
     ),
-    shf_revascularization = ynfac(shf_revascularization),
+    shf_revasc = ynfac(shf_revasc),
 
     shf_valvesurgery = case_when(
       is.na(KLAFFOP) & is.na(HEART_VALVE_SURGERY) ~ NA_real_,
