@@ -1,7 +1,7 @@
-# R code for SwedeHFdatabase 3
+# R code for SwedeHFdatabase 3 (SHFDB3)
 
-The aim of this R code is to be transparant and document the data handling to
-create SwedeHFdatabase 3.
+The aim of this R code is to be transparant and document the data management to
+create SwedeHFdatabase 3 (SHFDB3).
 
 ## Language 
 
