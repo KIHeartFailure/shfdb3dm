@@ -21,7 +21,7 @@
 *.pdf
 *.log
 
-TODO
+TODO_when_versions_change
 OLD
 checks/
 data/
@@ -30,3 +30,4 @@ inst/
 output/
 reports/
 docs/
+metadata/tmp_meta_variables.xlsx

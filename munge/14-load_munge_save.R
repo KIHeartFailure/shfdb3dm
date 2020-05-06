@@ -16,15 +16,15 @@ save(file = "./data/rsdata_for_webb.RData", list = c("rsdata", "flow", "ncontrol
 
 # Version number
 
-rsdata300 <- rsdata
-rsdatanum300 <- rsdatanum
+rsdata301 <- rsdata
+rsdatanum301 <- rsdatanum
 
 # RData
 
-save(file = "./data/v300/rsdata300.RData", list = c("rsdata300"))
-save(file = "./data/v300/rsdatanum300.RData", list = c("rsdatanum300"))
+save(file = "./data/v301/rsdata301.RData", list = c("rsdata301"))
+save(file = "./data/v301/rsdatanum301.RData", list = c("rsdatanum301"))
 
 # Txt
 
-write.table(rsdata300, file = "./data/v300/rsdata300.txt", quote = FALSE, sep = "\t", row.names = FALSE)
-write.table(rsdatanum300, file = "./data/v300/rsdatanum300.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(rsdata301, file = "./data/v301/rsdata301.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(rsdatanum301, file = "./data/v301/rsdatanum301.txt", quote = FALSE, sep = "\t", row.names = FALSE)
