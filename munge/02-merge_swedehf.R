@@ -24,7 +24,7 @@ yncomb <- function(oldvar, newvar) {
 }
 
 rsdata <- rsdata %>%
-  #mutate( # change to transmute when finished checking
+  # mutate( # change to transmute when finished checking
   transmute(
     LopNr = LopNr,
     shf_source = case_when(
@@ -227,8 +227,37 @@ rsdata <- rsdata %>%
       ), NA_real_
     ),
     shf_arni = yncomb(ARNI_old, ARNI),
-    # arni dose, väntar och ser om någon behöver, ARNI_DOSE, L_ARNI_DOSE, ARNI_SAKUBITRIL_2426_DOSE, ARNI_SAKUBITRIL_4951_DOSE
-    # ARNI_SAKUBITRIL_97103_DOSE
+    tmp_oldarnidose = case_when(
+      DOSARNI == 1 ~ "12/13",
+      DOSARNI == 2 ~ "24/26",
+      DOSARNI == 3 ~ "36/39",
+      DOSARNI == 4 ~ "49/51",
+      DOSARNI == 5 ~ "61/64",
+      DOSARNI == 6 ~ "73/77",
+      DOSARNI == 7 ~ "85/90",
+      DOSARNI == 8 ~ "97/103",
+      DOSARNI == 9 ~ "109/116",
+      DOSARNI == 10 ~ "121/129",
+      DOSARNI == 11 ~ "133/142",
+      DOSARNI == 12 ~ "145/155",
+      DOSARNI == 13 ~ "157/168",
+      DOSARNI == 14 ~ "169/181",
+      DOSARNI == 15 ~ "181/194",
+      DOSARNI == 16 ~ "194/206"
+    ),
+    tmp_mignewarnidose = case_when(
+      L_ARNI_DOSE == "D121_129" ~ "121/129",
+      L_ARNI_DOSE == "D145_155" ~ "145/155",
+      L_ARNI_DOSE == "D157_168" ~ "157/168",
+      L_ARNI_DOSE == "D194_206" ~ "194/206",
+      L_ARNI_DOSE == "D24_26" ~ "24/26",
+      L_ARNI_DOSE == "D49_51" ~ "49/51",
+      L_ARNI_DOSE == "D97_103" ~ "97/103"
+    ),
+    shf_arnidose = if_else(!is.na(shf_arni) & shf_arni == "Yes",
+      coalesce(tmp_oldarnidose, tmp_mignewarnidose, ARNI_DOSE),
+      NA_character_
+    ),
 
     shf_ras = case_when(
       is.na(shf_arb) | is.na(shf_acei) ~ NA_real_,

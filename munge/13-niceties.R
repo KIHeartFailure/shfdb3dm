@@ -37,13 +37,15 @@ rsdata_levs <- rsdata %>%
   sapply(levels) %>%
   unlist()
 
-rsdata_levs <- bind_cols(level = rsdata_levs, varval = names(rsdata_levs)) %>%
+rsdata_levs <- bind_cols(level = rsdata_levs, var = names(rsdata_levs)) %>%
   mutate(
-    variable = substr(varval, 1, nchar(varval) - 1),
-    value = as.numeric(substr(varval, nchar(varval), nchar(varval))),
+    variable = str_replace(names(rsdata_levs), "\\d+$", "")
   ) %>%
+  group_by(variable) %>%
+  mutate(value = row_number()) %>%
+  ungroup() %>%
   # fix so that yes no variables should have values 0, 1, not 1, 2
-  mutate(value = if_else(variable %in% ynvars, value - 1, value)) %>%
+  mutate(value = ifelse(variable %in% ynvars, value - 1, value)) %>%
   select(variable, value, level)
 
 write.xlsx(rsdata_levs, "./metadata/meta_factorlevels.xlsx")
