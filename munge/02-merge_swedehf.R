@@ -92,6 +92,9 @@ rsdata <- rsdata %>%
     #  tmp_alcohol == 1 | tmp_alcohol_vecka == 1 | tmp_alcohol_tillfalle == 1 ~ "Risk",
     #  tmp_alcohol == 0 | tmp_alcohol_vecka == 0 | tmp_alcohol_tillfalle == 0 ~ "Normal"
     # ),
+    # keep 2 dates for imp of hf duration below
+    DATE_FOR_DIAGNOSIS_HF = DATE_FOR_DIAGNOSIS_HF,
+    d_DATE_FOR_ADMISSION = d_DATE_FOR_ADMISSION,
     tmp_timedurationhf = d_DATE_FOR_ADMISSION - DATE_FOR_DIAGNOSIS_HF,
     tmp_timedurationhf2 = case_when(
       tmp_timedurationhf < 6 * 30.5 ~ "LESS_THAN_6_MONTHS",
@@ -400,3 +403,82 @@ rsdata <- rsdata %>%
     shf_deathdtm = if_else(shf_deathdtm > ymd("2018-12-31"), as.Date(NA), shf_deathdtm)
   ) %>%
   select(-starts_with("tmp_"))
+
+
+# Impute comorbs and hf duration ------------------------------------------
+
+dummyfunc <- function(var) {
+  var <- var
+}
+
+impvars <- c(
+  "shf_diabetes", "shf_hypertension", "shf_af", "shf_lungdisease", "shf_valvedisease",
+  "shf_dcm", "shf_revasc", "shf_valvesurgery",
+  "shf_durationhf"
+)
+
+rsdata <- rsdata %>%
+  mutate_at(impvars, list(org = ~ dummyfunc(.))) %>%
+  mutate(tmp_indexdtm = if_else(!is.na(shf_durationhf), d_DATE_FOR_ADMISSION, as.Date(NA))) %>%
+  group_by(LopNr) %>%
+  arrange(shf_indexdtm) %>%
+  fill_(fill_cols = c(impvars, "tmp_indexdtm", "DATE_FOR_DIAGNOSIS_HF")) %>%
+  ungroup() %>%
+  arrange(LopNr, shf_indexdtm) %>%
+  mutate(
+    shf_diabetes = replace(
+      shf_diabetes,
+      is.na(shf_diabetes_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ), 
+    shf_hypertension = replace(
+      shf_hypertension,
+      is.na(shf_hypertension_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ), 
+    shf_af = replace(
+      shf_af,
+      is.na(shf_af_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ),
+    shf_lungdisease = replace(
+      shf_lungdisease,
+      is.na(shf_lungdisease_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ),
+    shf_valvedisease = replace(
+      shf_valvedisease,
+      is.na(shf_valvedisease_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ),
+    shf_dcm = replace(
+      shf_dcm,
+      is.na(shf_dcm_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ),
+    shf_revasc = replace(
+      shf_revasc,
+      is.na(shf_revasc_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ),
+    shf_valvesurgery = replace(
+      shf_valvesurgery,
+      is.na(shf_valvesurgery_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ),
+    shf_durationhf = case_when(
+      !is.na(shf_durationhf_org) ~ shf_durationhf_org,
+      is.na(shf_durationhf_org) &
+        (shf_type == "Index" | shf_source != "New SHF") ~ NA_character_,
+      #is.na(shf_durationhf) ~ NA_character_,
+      shf_durationhf == ">6mo" ~ shf_durationhf,
+      shf_indexdtm - DATE_FOR_DIAGNOSIS_HF >= 6 * 30.5 ~ ">6mo",
+      shf_indexdtm - DATE_FOR_DIAGNOSIS_HF < 6 * 30.5 ~ "<6mo",
+      shf_durationhf == "<6mo" &
+        shf_indexdtm - tmp_indexdtm >= 6 * 30.5 ~ ">6mo",
+      # make assumption that hf diagnosis is at shf_type = Index
+      shf_durationhf == "<6mo" &
+        shf_indexdtm - tmp_indexdtm < 6 * 30.5 ~ "<6mo"
+    )
+  ) %>%
+  select(-contains("_org"), d_DATE_FOR_ADMISSION, DATE_FOR_DIAGNOSIS_HF, tmp_indexdtm)

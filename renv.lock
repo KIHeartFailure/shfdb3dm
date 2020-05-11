@@ -257,10 +257,10 @@
     },
     "zoo": {
       "Package": "zoo",
-      "Version": "1.8-7",
+      "Version": "1.8-8",
       "Source": "CRAN",
       "Repository": "CRAN",
-      "Hash": "8b5dcf3d9b57bee678f0622f26720af9"
+      "Hash": "cfdb2876a9fb9590edfda6938e48368b"
     }
   }
 }
