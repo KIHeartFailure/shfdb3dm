@@ -40,6 +40,9 @@ rsdata <- left_join(
 
 ## income
 inc <- rsdata %>%
+  group_by(LopNr, shf_indexyear) %>%
+  slice(1) %>%
+  ungroup () %>%
   group_by(shf_indexyear) %>%
   summarise(incsum = list(enframe(quantile(scb_dispincome,
     probs = c(0.33, 0.66),

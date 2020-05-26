@@ -17,10 +17,9 @@ rsdata <- bind_rows(
 
 yncomb <- function(oldvar, newvar) {
   combvar <- case_when(
-    !!oldvar == 0 | !!newvar == "NO" ~ 0,
-    !!oldvar == 1 | !!newvar == "YES" ~ 1
+    !!oldvar == 0 | !!newvar == "NO" ~ "No",
+    !!oldvar == 1 | !!newvar == "YES" ~ "Yes"
   )
-  combvar <- ynfac(combvar)
 }
 
 rsdata <- rsdata %>%
@@ -157,23 +156,21 @@ rsdata <- rsdata %>%
     shf_diuretic = case_when(
       is.na(DIURETIKA) & shf_source == "Old SHF" |
         is.na(LOOP_DIUR) & shf_source == "New SHF migrated from old SHF" |
-        (is.na(LOOP_DIUR) | is.na(THIAZIDE_OR_OTHER_DIURETIC)) & shf_source == "New SHF" ~ NA_real_,
+        (is.na(LOOP_DIUR) | is.na(THIAZIDE_OR_OTHER_DIURETIC)) & shf_source == "New SHF" ~ NA_character_,
       DIURETIKA %in% c(1, 2, 3, 8) |
         LOOP_DIUR %in% c("LOOP_DIURETIC", "LOOP_DIURETIC_AND_THIAZIDES", "THIAZIDES", "YES") |
-        THIAZIDE_OR_OTHER_DIURETIC == "YES" ~ 1,
-      TRUE ~ 0 # same as: DIURETIKA == 0 | LOOP_DIUR == "NO" | THIAZIDE_OR_OTHER_DIURETIC == "NO" ~ "No"
+        THIAZIDE_OR_OTHER_DIURETIC == "YES" ~ "Yes",
+      TRUE ~ "No" # same as: DIURETIKA == 0 | LOOP_DIUR == "NO" | THIAZIDE_OR_OTHER_DIURETIC == "NO" ~ "No"
     ),
-    shf_diuretic = ynfac(shf_diuretic),
-
+    
     shf_loopdiuretic = case_when(
       (is.na(DIURETIKA) | shf_indexyear < 2011) & shf_source == "Old SHF" |
         (is.na(LOOP_DIUR) | shf_indexyear < 2011) & shf_source == "New SHF migrated from old SHF" |
-        is.na(LOOP_DIUR) & shf_source == "New SHF" ~ NA_real_,
+        is.na(LOOP_DIUR) & shf_source == "New SHF" ~ NA_character_,
       DIURETIKA %in% c(1, 3) |
-        LOOP_DIUR %in% c("LOOP_DIURETIC", "LOOP_DIURETIC_AND_THIAZIDES", "YES") ~ 1,
-      TRUE ~ 0 # same as: DIURETIKA %in% c(0, 2) | LOOP_DIUR %in% c("NO", "THIAZIDES") ~ "No"
+        LOOP_DIUR %in% c("LOOP_DIURETIC", "LOOP_DIURETIC_AND_THIAZIDES", "YES") ~ "Yes",
+      TRUE ~ "No" # same as: DIURETIKA %in% c(0, 2) | LOOP_DIUR %in% c("NO", "THIAZIDES") ~ "No"
     ),
-    shf_loopdiuretic = ynfac(shf_loopdiuretic),
 
     shf_loopdiureticdose = if_else(!is.na(shf_loopdiuretic) & shf_loopdiuretic == "Yes",
       coalesce(
@@ -263,11 +260,10 @@ rsdata <- rsdata %>%
     ),
 
     shf_ras = case_when(
-      is.na(shf_arb) | is.na(shf_acei) ~ NA_real_,
-      shf_arb == "Yes" | shf_acei == "Yes" | shf_arni == "Yes" ~ 1,
-      TRUE ~ 0
+      is.na(shf_arb) | is.na(shf_acei) ~ NA_character_,
+      shf_arb == "Yes" | shf_acei == "Yes" | shf_arni == "Yes" ~ "Yes",
+      TRUE ~ "No"
     ),
-    shf_ras = ynfac(shf_ras),
 
     shf_bbl = yncomb(BETABLOCKERARE, BETA_BLOCKER),
     shf_bblsub = case_when(
@@ -305,10 +301,9 @@ rsdata <- rsdata %>%
     shf_digoxin = yncomb(DIGITALIS, DIGOXIN),
     shf_asaantiplatelet = yncomb(ASATRC, ASA_ANTIPLATELET),
     shf_anticoagulantia = case_when(
-      ANTIKOAGULANTIA == 0 | ANTICOAGULANT == "NO" ~ 0,
-      ANTIKOAGULANTIA == 1 | ANTICOAGULANT %in% c("YES", "NOAK", "WARAN") ~ 1
+      ANTIKOAGULANTIA == 0 | ANTICOAGULANT == "NO" ~ "No",
+      ANTIKOAGULANTIA == 1 | ANTICOAGULANT %in% c("YES", "NOAK", "WARAN") ~ "Yes"
     ),
-    shf_anticoagulantia = ynfac(shf_anticoagulantia),
 
     shf_statin = yncomb(STATINER, STATIN),
     shf_nitrate = yncomb(NITRATER, LONG_ACTING_NITRATE),
@@ -358,30 +353,33 @@ rsdata <- rsdata %>%
 
     # comorbidities
     shf_diabetes = case_when(
-      DIABETES_old == 0 | DIABETES == "NO" ~ 0,
-      DIABETES_old %in% c(1, 2, 3, 4, 5) | DIABETES %in% c("TYPE_1", "TYPE_2") ~ 1
+      DIABETES_old == 0 | DIABETES == "NO" ~ "No",
+      DIABETES_old %in% c(1, 2, 3, 4, 5) | DIABETES %in% c("TYPE_1", "TYPE_2") ~ "Yes"
     ),
-    shf_diabetes = ynfac(shf_diabetes),
-
+    shf_diabetestype = case_when(
+      shf_indexyear < 2010 ~ NA_character_,
+      DIABETES_old == 0 | DIABETES == "NO" ~ "No",
+      DIABETES_old == 1 | DIABETES == "TYPE_1" ~ "Type I",
+      DIABETES_old %in% c(2, 3, 4, 5) | DIABETES == "TYPE_2" ~ "Type II"
+    ),
+    
     shf_hypertension = yncomb(HYPERTONI, HYPERTENSION),
     shf_af = yncomb(FORMAKSFLIMMER, ATRIAL_FIBRILLATION_FLUTTER),
     shf_lungdisease = yncomb(LUNGSJUKDOM, CHRONIC_LUNG_DISEASE),
     shf_valvedisease = yncomb(KARVOC, HEART_VALVE_DISEASE),
     shf_dcm = yncomb(DCM, DILATED_CARDIOMYOPATHY),
     shf_revasc = case_when(
-      is.na(REVASKULARISERING) & is.na(REVASCULARIZATION) ~ NA_real_,
-      REVASKULARISERING == 0 | REVASCULARIZATION == "NO" ~ 0,
-      TRUE ~ 1
+      is.na(REVASKULARISERING) & is.na(REVASCULARIZATION) ~ NA_character_,
+      REVASKULARISERING == 0 | REVASCULARIZATION == "NO" ~ "No",
+      TRUE ~ "Yes"
     ),
-    shf_revasc = ynfac(shf_revasc),
 
     shf_valvesurgery = case_when(
-      is.na(KLAFFOP) & is.na(HEART_VALVE_SURGERY) ~ NA_real_,
-      KLAFFOP == 0 | HEART_VALVE_SURGERY == "NO" ~ 0,
-      TRUE ~ 1
+      is.na(KLAFFOP) & is.na(HEART_VALVE_SURGERY) ~ NA_character_,
+      KLAFFOP == 0 | HEART_VALVE_SURGERY == "NO" ~ "No",
+      TRUE ~ "Yes"
     ),
-    shf_valvesurgery = ynfac(shf_valvesurgery),
-
+    
     shf_ekg = case_when(
       EKGSENAST == 1 | EKG_RHYTHM == "SINUS_RHYTHM" ~ 1,
       EKGSENAST == 2 | EKG_RHYTHM == "ATRIAL_FIBRILLATION" ~ 2,
@@ -412,7 +410,7 @@ dummyfunc <- function(var) {
 }
 
 impvars <- c(
-  "shf_diabetes", "shf_hypertension", "shf_af", "shf_lungdisease", "shf_valvedisease",
+  "shf_diabetes", "shf_diabetestype", "shf_hypertension", "shf_af", "shf_lungdisease", "shf_valvedisease",
   "shf_dcm", "shf_revasc", "shf_valvesurgery",
   "shf_durationhf"
 )
@@ -429,6 +427,11 @@ rsdata <- rsdata %>%
     shf_diabetes = replace(
       shf_diabetes,
       is.na(shf_diabetes_org) &
+        (shf_type == "Index" | shf_source != "New SHF"), NA
+    ), 
+    shf_diabetestype = replace(
+      shf_diabetestype,
+      is.na(shf_diabetestype_org) &
         (shf_type == "Index" | shf_source != "New SHF"), NA
     ), 
     shf_hypertension = replace(
@@ -482,3 +485,19 @@ rsdata <- rsdata %>%
     )
   ) %>%
   select(-contains("_org"), d_DATE_FOR_ADMISSION, DATE_FOR_DIAGNOSIS_HF, tmp_indexdtm)
+
+
+# Create variable EF at index ---------------------------------------------
+
+rsdataindex <- rsdata %>%
+  filter(shf_type == "Index", 
+         !is.na(shf_ef)) %>%
+  group_by(LopNr) %>%
+  slice(1) %>%
+  ungroup() %>%
+  transmute(LopNr = LopNr, 
+            shf_eforg = shf_ef)
+
+rsdata <- left_join(rsdata, 
+                    rsdataindex, 
+                    by = "LopNr") 

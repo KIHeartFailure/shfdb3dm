@@ -39,8 +39,8 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "ihd",
-  diakod = " I2[0-5]",
-  stoptime = -5 * 365.25,
+  diakod = " 41[0-4]| I2[0-5]",
+  #stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -53,8 +53,8 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "mi",
-  diakod = " I21| I22| I252",
-  stoptime = -5 * 365.25,
+  diakod = " 410| 412| I21| I22| I252",
+  #stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -82,7 +82,7 @@ rsdata <- create_sosvar(
   type = "com",
   name = "pci",
   opkod = " FNG",
-  stoptime = -5 * 365.25,
+  #stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -98,7 +98,7 @@ rsdata <- create_sosvar(
   name = "cabg",
   diakod = " Z951| Z955",
   opkod = " FNA| FNB| FNC| FND| FNE| FNF| FNH",
-  stoptime = -5 * 365.25,
+  #stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -153,8 +153,8 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "stroke",
-  diakod = " I6[0-4]| I69[0-4]",
-  stoptime = -5 * 365.25,
+  diakod = " 43[0-4]| 438| I6[0-4]| I69[0-4]",
+  #stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -181,8 +181,8 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "stroketia",
-  diakod = " I6[0-4]| I69[0-4]| G45",
-  stoptime = -5 * 365.25,
+  diakod = " 43[0-4]| 438| I6[0-4]| I69[0-4]| G45",
+  #stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -475,7 +475,7 @@ rsdata <- create_sosvar(
   diavar = HDIA,
   type = "out",
   name = "hospstroketia",
-  diakod = " I6[0-4]| I69[0-4]| G45",
+  diakod = " I6[0-4]| G45",
   censdate = censdtm,
   valsclass = "num",
   warnings = FALSE

@@ -3,6 +3,8 @@
 rsdata <- rsdata %>%
   select(
     LopNr, casecontrol, ncontrols, LopNrcase,
+    shf_source, shf_indexdtm, shf_indexyear, shf_type,
+    contains("shf_ef"),
     contains("shf_"),
     contains("scb_"),
     #censdtm,

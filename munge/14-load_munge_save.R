@@ -12,19 +12,37 @@ ProjectTemplate::reload.project(
 
 # For webb only
 
-save(file = "./data/rsdata_for_webb.RData", list = c("rsdata", "flow", "ncontrols", "outcommeta", "ccimeta", "deathmeta"))
+save(file = "./data/rsdata_for_webb.RData", 
+     list = c("rsdata", "flow", "ncontrols", "outcommeta", "ccimeta", "deathmeta"))
 
 # Version number
 
-rsdata302 <- rsdata
-rsdatanum302 <- rsdatanum
+version <- "310"
+
+assign(paste0("rsdata", version), rsdata)
+assign(paste0("rsdatanum", version), rsdatanum)
+
+dir.create(paste0("./data/v", version))
 
 # RData
 
-save(file = "./data/v302/rsdata302.RData", list = c("rsdata302"))
-save(file = "./data/v302/rsdatanum302.RData", list = c("rsdatanum302"))
+save(file = paste0("./data/v", version, "/rsdata", version, ".RData"), 
+     list = c(paste0("rsdata", version)))
+save(file = paste0("./data/v", version, "/rsdatanum", version, ".RData"), 
+     list = c(paste0("rsdatanum", version)))
 
 # Txt
 
-write.table(rsdata302, file = "./data/v302/rsdata302.txt", quote = FALSE, sep = "\t", row.names = FALSE)
-write.table(rsdatanum302, file = "./data/v302/rsdatanum302.txt", quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(rsdata, 
+            file = paste0("./data/v", version, "/rsdata", version, ".txt"), 
+            quote = FALSE, sep = "\t", row.names = FALSE)
+write.table(rsdatanum, 
+            file = paste0("./data/v", version, "/rsdatanum", version, ".txt"),
+            quote = FALSE, sep = "\t", row.names = FALSE)
+
+# Stata 13
+
+write_dta(rsdata, 
+           path = paste0("./data/v", version, "/rsdata", version, ".dta"))
+write_dta(rsdatanum, 
+           path = paste0("./data/v", version, "/rsdatanum", version, ".dta"))
