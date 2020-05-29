@@ -259,7 +259,7 @@ rsdata <- rsdata %>%
       NA_character_
     ),
 
-    shf_ras = case_when(
+    shf_rasarni = case_when(
       is.na(shf_arb) | is.na(shf_acei) ~ NA_character_,
       shf_arb == "Yes" | shf_acei == "Yes" | shf_arni == "Yes" ~ "Yes",
       TRUE ~ "No"

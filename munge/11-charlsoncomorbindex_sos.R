@@ -29,7 +29,7 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "cci_chf",
-  diakod = " 425[E-H]| 425W| 425X| 428| 1099| 1110| 1130| 1132| I255| I420| I42[5-9]| I43| I50| P290",
+  diakod = " 425[E-H]| 425W| 425X| 428| I099| I110| I130| I132| I255| I420| I42[5-9]| I43| I50| P290",
   stoptime = -10 * 365.25,
   valsclass = "num",
   warnings = FALSE
@@ -46,7 +46,7 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "cci_pvd",
-  diakod = " 093A| 437D| 440| 441| 443B| 443W| 443X| 447B| 557B| 557X| V43E| I70| I71| I731| I738| I739| 1771| 1790| I1792| K551| K558| K559| Z958| Z959",
+  diakod = " 093A| 437D| 440| 441| 443B| 443W| 443X| 447B| 557B| 557X| V43E| I70| I71| I731| I738| I739| I771| I790| I1792| K551| K558| K559| Z958| Z959",
   stoptime = -10 * 365.25,
   valsclass = "num",
   warnings = FALSE
@@ -97,7 +97,7 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "cci_copd",
-  diakod = " 416W| 416X| 49[0-6]| 50[0-5]| 506E| 508B| 508W| 1278| 1279| J4[0-7]| J6[0-7]| J684| J701| J703",
+  diakod = " 416W| 416X| 49[0-6]| 50[0-5]| 506E| 508B| 508W| I278| I279| J4[0-7]| J6[0-7]| J684| J701| J703",
   stoptime = -10 * 365.25,
   valsclass = "num",
   warnings = FALSE

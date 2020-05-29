@@ -19,7 +19,7 @@ save(
 
 # Version number
 
-version <- "310"
+version <- "311"
 
 assign(paste0("rsdata", version), rsdata)
 assign(paste0("rsdatanum", version), rsdatanum)
@@ -41,11 +41,11 @@ save(
 
 write.table(rsdata,
   file = paste0("./data/v", version, "/rsdata", version, ".txt"),
-  quote = FALSE, sep = "\t", row.names = FALSE
+  quote = FALSE, sep = "\t", row.names = FALSE, na = ""
 )
 write.table(rsdatanum,
   file = paste0("./data/v", version, "/rsdatanum", version, ".txt"),
-  quote = FALSE, sep = "\t", row.names = FALSE
+  quote = FALSE, sep = "\t", row.names = FALSE, na = ""
 )
 
 # Stata 14
