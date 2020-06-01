@@ -195,7 +195,7 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "valvular",
-  diakod = " I0[5-8]| I091| I098| I3[4-9]| Q22| Q23[0-3]| Z95[2-4]",
+  diakod = " I0[5-8]| I3[4-9]| Q22| Q23[0-3]| Z95[2-4]",
   stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
@@ -283,7 +283,7 @@ rsdata <- create_sosvar(
   diavar = DIA_all,
   type = "com",
   name = "liver",
-  diakod = " B18| I85| I864| I982| K70| K710| K711| K71[3-7]| K7[2-4]| K760| K76[2-9]| Z944",
+  diakod = " B18| I85| I864| I982| K70| K710| K711| K71[3-7]| K7[2-4]| K760| K76[2-9]",
   stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
@@ -370,20 +370,6 @@ rsdata <- create_sosvar(
   name = "alcohol",
   diakod = " E244| E52| F10| G312| G621| G721| I426| K292| K70| K860| O354| P043| Q860| T51| Z502| Z714",
   ekod = " Y90| Y91",
-  stoptime = -5 * 365.25,
-  valsclass = "num",
-  warnings = FALSE
-)
-rsdata <- create_sosvar(
-  sosdata = patreg,
-  cohortdata = rsdata,
-  patid = LopNr,
-  indexdate = shf_indexdtm,
-  sosdate = INDATUM,
-  diavar = DIA_all,
-  type = "com",
-  name = "ra",
-  diakod = " M05| M06",
   stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
@@ -674,11 +660,9 @@ rsdata <- create_sosvar(
   patid = LopNr,
   indexdate = shf_indexdtm,
   sosdate = INDATUM,
-  diavar = HDIA,
   opvar = OP_all,
   type = "out",
   name = "hosprevasc",
-  diakod = " Z951| Z955",
   opkod = " FNG| FNA| FNB| FNC| FND| FNE| FNF| FNH",
   censdate = censdtm,
   valsclass = "num",
