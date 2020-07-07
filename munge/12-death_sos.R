@@ -36,7 +36,7 @@ rsdata <- create_deathvar(
   deathdate = sos_deathdtm,
   name = "scd",
   orsakvar = sos_deathcause,
-  orsakkod = "I361",
+  orsakkod = "I461",
   valsclass = "num",
   warnings = FALSE
 )

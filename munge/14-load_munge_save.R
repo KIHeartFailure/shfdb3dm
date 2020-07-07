@@ -19,7 +19,7 @@ save(
 
 # Version number
 
-version <- "312"
+version <- "313"
 
 assign(paste0("rsdata", version), rsdata)
 assign(paste0("rsdatanum", version), rsdatanum)
