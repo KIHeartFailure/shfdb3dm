@@ -13,12 +13,13 @@ migration %>%
 by = c("LopNr" = "lopnr")
 ) %>%
   mutate(tmp_migrationdtm = ymd(MigrationDatum)) %>%
-  filter(tmp_migrationdtm > shf_indexdtm) %>%
+  filter(tmp_migrationdtm > shf_indexdtm,
+         tmp_migrationdtm <= ymd("2018-12-31")
+         ) %>%
   group_by(LopNr, shf_indexdtm) %>%
   slice(1) %>%
   ungroup() %>%
   select(LopNr, shf_indexdtm, tmp_migrationdtm)
-
 
 rsdata <- left_join(rsdata,
   migration,

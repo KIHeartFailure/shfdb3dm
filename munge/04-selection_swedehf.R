@@ -28,7 +28,7 @@ flow <- rbind(flow, c("Remove posts < 18 years", nrow(rsdata)))
 rsdata <- rsdata %>%
   filter((shf_indexdtm < shf_deathdtm | is.na(shf_deathdtm))) # enddate prior to indexdate
 
-flow <- rbind(flow, c("Remove posts with end of follow-up < index date", nrow(rsdata)))
+flow <- rbind(flow, c("Remove posts with end of follow-up <= index date (died in hospital)", nrow(rsdata)))
 
 rsdata <- rsdata %>%
   filter(shf_indexdtm <= ymd("2018-12-31")) %>%
