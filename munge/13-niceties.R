@@ -62,4 +62,4 @@ m1 <- function(var) {
 }
 rsdatanum <- rsdata %>%
   mutate_if(is.factor, as.numeric) %>%
-  mutate_at(vars(ynvars), m1)
+  mutate_at(vars(all_of(ynvars)), m1)

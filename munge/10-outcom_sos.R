@@ -403,7 +403,7 @@ rsdata <- create_sosvar(
   diavar = HDIA,
   type = "out",
   name = "hosphf",
-  diakod = " I110| I130| I132| I255| I420| I423| 1425| I426| I427| I428| I429| I43| I50| J81| K761| R57",
+  diakod = " I110| I130| I132| I255| I420| I423| I425| I426| I427| I428| I429| I43| I50| J81| K761| R57",
   censdate = censdtm,
   valsclass = "num",
   warnings = FALSE
