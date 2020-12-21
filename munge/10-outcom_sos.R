@@ -172,20 +172,9 @@ rsdata <- create_sosvar(
   valsclass = "num",
   warnings = FALSE
 )
-rsdata <- create_sosvar(
-  sosdata = patreg,
-  cohortdata = rsdata,
-  patid = LopNr,
-  indexdate = shf_indexdtm,
-  sosdate = INDATUM,
-  diavar = DIA_all,
-  type = "com",
-  name = "stroketia",
-  diakod = " 43[0-4]| 438| I6[0-4]| I69[0-4]| G45",
-  #stoptime = -5 * 365.25,
-  valsclass = "num",
-  warnings = FALSE
-)
+rsdata <- rsdata %>%
+  mutate(sos_com_stroketia = if_else(sos_com_stroke == 1 | sos_com_tia == 1, 1, 0))
+
 rsdata <- create_sosvar(
   sosdata = patreg,
   cohortdata = rsdata,
