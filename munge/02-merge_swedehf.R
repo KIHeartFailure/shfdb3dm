@@ -10,6 +10,12 @@ oldrs <- oldrs %>%
     ARNI_old = ARNI
   )
 
+newrs <- left_join(
+  newrs,
+  enheter %>% select(ORG_UNIT_REFERENCE, ORG_UNIT_LEVEL_NAME),
+  by = c("HEALTHCAREUNIT" = "ORG_UNIT_REFERENCE")
+)
+
 rsdata <- bind_rows(
   newrs %>% mutate(source = 3),
   oldrs %>% mutate(source = 1)
@@ -42,6 +48,7 @@ rsdata <- rsdata %>%
       TYPE_old == 0 | TYPE == "INDEX" ~ "Index",
       TYPE_old == 1 | TYPE %in% c("FOLLOWUP", "YEARLY_FOLLOWUP") ~ "Follow-up"
     ),
+
     shf_age = coalesce(d_age_at_VISIT_DATE, d_alder),
     shf_civilstatus = case_when(
       CIVILSTATUS == 1 | CIVIL_STATUS == "PARTNER" ~ "Married/cohabitating",
@@ -55,6 +62,11 @@ rsdata <- rsdata %>%
       VARDGIVARE %in% c(2, 3) | LOCATION == "IX_OV" | TYPE %in% c("FOLLOWUP", "YEARLY_FOLLOWUP") ~ "Out-patient",
       VARDGIVARE == 1 | LOCATION == "IX_SV" ~ "In-patient"
     ),
+    shf_centretype = case_when(
+      TYPEID == 1 | ORG_UNIT_LEVEL_NAME %in% c("Avdelning", "Fristående hjärtmottagning", "Mottagning") ~ "Hospital",
+      TYPEID == 2 | ORG_UNIT_LEVEL_NAME %in% c("Vårdcentral") ~ "Primary care"
+    ),
+
     shf_smoking = case_when(
       ROKNING == 1 | ROKVANOR == 0 | SMOKING_HABITS == "NEVER" ~ "Never",
       ROKNING == 2 | ROKVANOR %in% c(1, 2) | SMOKING_HABITS %in% c("FORMER_SMOKER", "STOP_LESS_6_MONTHS", "STOP_MORE_6_MONTHS") ~ "Former",
@@ -162,7 +174,7 @@ rsdata <- rsdata %>%
         THIAZIDE_OR_OTHER_DIURETIC == "YES" ~ "Yes",
       TRUE ~ "No" # same as: DIURETIKA == 0 | LOOP_DIUR == "NO" | THIAZIDE_OR_OTHER_DIURETIC == "NO" ~ "No"
     ),
-    
+
     shf_loopdiuretic = case_when(
       (is.na(DIURETIKA) | shf_indexyear < 2011) & shf_source == "Old SHF" |
         (is.na(LOOP_DIUR) | shf_indexyear < 2011) & shf_source == "New SHF migrated from old SHF" |
@@ -362,7 +374,7 @@ rsdata <- rsdata %>%
       DIABETES_old == 1 | DIABETES == "TYPE_1" ~ "Type I",
       DIABETES_old %in% c(2, 3, 4, 5) | DIABETES == "TYPE_2" ~ "Type II"
     ),
-    
+
     shf_hypertension = yncomb(HYPERTONI, HYPERTENSION),
     shf_af = yncomb(FORMAKSFLIMMER, ATRIAL_FIBRILLATION_FLUTTER),
     shf_lungdisease = yncomb(LUNGSJUKDOM, CHRONIC_LUNG_DISEASE),
@@ -379,7 +391,7 @@ rsdata <- rsdata %>%
       KLAFFOP == 0 | HEART_VALVE_SURGERY == "NO" ~ "No",
       TRUE ~ "Yes"
     ),
-    
+
     shf_ekg = case_when(
       EKGSENAST == 1 | EKG_RHYTHM == "SINUS_RHYTHM" ~ 1,
       EKGSENAST == 2 | EKG_RHYTHM == "ATRIAL_FIBRILLATION" ~ 2,
@@ -428,17 +440,17 @@ rsdata <- rsdata %>%
       shf_diabetes,
       is.na(shf_diabetes_org) &
         (shf_type == "Index" | shf_source != "New SHF"), NA
-    ), 
+    ),
     shf_diabetestype = replace(
       shf_diabetestype,
       is.na(shf_diabetestype_org) &
         (shf_type == "Index" | shf_source != "New SHF"), NA
-    ), 
+    ),
     shf_hypertension = replace(
       shf_hypertension,
       is.na(shf_hypertension_org) &
         (shf_type == "Index" | shf_source != "New SHF"), NA
-    ), 
+    ),
     shf_af = replace(
       shf_af,
       is.na(shf_af_org) &
@@ -473,7 +485,7 @@ rsdata <- rsdata %>%
       !is.na(shf_durationhf_org) ~ shf_durationhf_org,
       is.na(shf_durationhf_org) &
         (shf_type == "Index" | shf_source != "New SHF") ~ NA_character_,
-      #is.na(shf_durationhf) ~ NA_character_,
+      # is.na(shf_durationhf) ~ NA_character_,
       shf_durationhf == ">6mo" ~ shf_durationhf,
       shf_indexdtm - DATE_FOR_DIAGNOSIS_HF >= 6 * 30.5 ~ ">6mo",
       shf_indexdtm - DATE_FOR_DIAGNOSIS_HF < 6 * 30.5 ~ "<6mo",
@@ -490,14 +502,19 @@ rsdata <- rsdata %>%
 # Create variable EF at index ---------------------------------------------
 
 rsdataindex <- rsdata %>%
-  filter(shf_type == "Index", 
-         !is.na(shf_ef)) %>%
+  filter(
+    shf_type == "Index",
+    !is.na(shf_ef)
+  ) %>%
   group_by(LopNr) %>%
   slice(1) %>%
   ungroup() %>%
-  transmute(LopNr = LopNr, 
-            shf_eforg = shf_ef)
+  transmute(
+    LopNr = LopNr,
+    shf_eforg = shf_ef
+  )
 
-rsdata <- left_join(rsdata, 
-                    rsdataindex, 
-                    by = "LopNr") 
+rsdata <- left_join(rsdata,
+  rsdataindex,
+  by = "LopNr"
+)
