@@ -156,7 +156,7 @@ rsdata <- rsdata %>%
     tmp_sex = recode(shf_sex, "Male" = 1, "Female" = 0),
     tmp_ethnicity = 0, # ethnicity is unknown. therefore all are considered not "African-American"
     shf_gfrckdepi = nephro::CKDEpi.creat(shf_creatinine / 88.4, tmp_sex, shf_age, tmp_ethnicity),
-    shf_ntpropbnp = coalesce(PROBNP, NT_PROBNP),
+    shf_ntprobnp = coalesce(PROBNP, NT_PROBNP),
     shf_bnp = coalesce(BNP_old, BNP),
     shf_transferrin = P_TRANSFERRIN,
     shf_ferritin = S_FERRITIN,

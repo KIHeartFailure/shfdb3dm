@@ -18,7 +18,7 @@ rsdata <- rsdata %>%
     shf_sodium = clean_outliers(shf_sodium, 100, 200),
     shf_creatinine = clean_outliers(shf_creatinine, 40, 2000),
     # shf_gfrckdepi derived from other vars with limits,
-    shf_ntpropbnp = clean_outliers(shf_ntpropbnp, 5, 288888),
+    shf_ntprobnp = clean_outliers(shf_ntprobnp, 5, 288888),
     shf_transferrin = clean_outliers(shf_transferrin, 1, 100),
     shf_ferritin = clean_outliers(shf_ferritin, 1, 1000),
     shf_qrs = clean_outliers(shf_qrs, 50, 250)
