@@ -13,9 +13,10 @@ migration %>%
 by = c("LopNr" = "lopnr")
 ) %>%
   mutate(tmp_migrationdtm = ymd(MigrationDatum)) %>%
-  filter(tmp_migrationdtm > shf_indexdtm,
-         tmp_migrationdtm <= ymd("2018-12-31")
-         ) %>%
+  filter(
+    tmp_migrationdtm > shf_indexdtm,
+    tmp_migrationdtm <= ymd("2018-12-31")
+  ) %>%
   group_by(LopNr, shf_indexdtm) %>%
   slice(1) %>%
   ungroup() %>%
@@ -51,11 +52,13 @@ hfsos <- patreg %>%
   filter(tmp_hfsos)
 
 controlstososcase <-
-  inner_join(rsdata %>% filter(casecontrol == "Control") %>% select(LopNr, LopNrcase, shf_indexdtm, shf_indexyear),
-    hfsos,
-    by = "LopNr"
+  inner_join(rsdata %>%
+    filter(casecontrol == "Control") %>%
+    select(LopNr, LopNrcase, shf_indexdtm, shf_indexyear),
+  hfsos,
+  by = "LopNr"
   ) %>%
-  mutate(tmp_hfsosdtm = INDATUM) %>%
+  mutate(tmp_hfsosdtm = INDATUM - 1) %>% # set to day BEFORE HF diagnosis (otherwise will get HF diagnos at end date)
   group_by(LopNr, shf_indexdtm) %>%
   arrange(tmp_hfsosdtm) %>%
   slice(1) %>%
@@ -67,17 +70,21 @@ rsdata <- left_join(rsdata,
   by = c("LopNr", "shf_indexdtm")
 )
 
-controlstorscase <- left_join(rsdata %>% filter(casecontrol == "Control") %>% select(LopNr, LopNrcase, shf_indexdtm),
-  rsdata %>% filter(casecontrol == "Case") %>% select(LopNr, LopNrcase, shf_indexdtm),
-  by = "LopNr",
-  suffix = c("", "_case")
+controlstorscase <- left_join(rsdata %>%
+  filter(casecontrol == "Control") %>%
+  select(LopNr, LopNrcase, shf_indexdtm),
+rsdata %>%
+  filter(casecontrol == "Case") %>%
+  select(LopNr, LopNrcase, shf_indexdtm),
+by = "LopNr",
+suffix = c("", "_case")
 ) %>%
   filter(!is.na(shf_indexdtm_case)) %>%
   group_by(LopNr) %>%
   arrange(shf_indexdtm_case) %>%
   slice(1) %>%
   ungroup() %>%
-  rename(tmp_hfrsdtm = shf_indexdtm_case) %>%
+  mutate(tmp_hfrsdtm = shf_indexdtm_case - 1) %>% # set to day BEFORE HF diagnosis (otherwise will get HF diagnos at end date)
   select(LopNr, shf_indexdtm, tmp_hfrsdtm)
 
 rsdata <- left_join(rsdata,

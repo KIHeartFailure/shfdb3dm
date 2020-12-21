@@ -684,22 +684,23 @@ hfdiag <-
     hfsos, # created in 09-endtime.R
     by = "LopNr"
   ) %>%
+  mutate(tmp_sosdate = coalesce(UTDATUM, INDATUM)) %>%
   group_by(LopNr, shf_indexdtm) %>%
-  arrange(INDATUM) %>%
+  arrange(tmp_sosdate) %>%
   slice(1) %>%
   ungroup() %>%
-  select(LopNr, shf_indexdtm, INDATUM)
+  select(LopNr, shf_indexdtm, tmp_sosdate)
 
 rsdata <- left_join(rsdata,
   hfdiag,
   by = c("LopNr", "shf_indexdtm")
 ) %>%
   mutate(
-    sos_durationhf = as.numeric(shf_indexdtm - INDATUM),
+    sos_durationhf = as.numeric(shf_indexdtm - tmp_sosdate),
     sos_durationhf = case_when(
       casecontrol == "Control" ~ NA_real_,
       is.na(sos_durationhf) | sos_durationhf < 0 ~ 0,
       TRUE ~ sos_durationhf
     )
   ) %>%
-  select(-INDATUM)
+  select(-tmp_sosdate)
