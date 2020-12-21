@@ -29,7 +29,7 @@ yncomb <- function(oldvar, newvar) {
 }
 
 rsdata <- rsdata %>%
-  # mutate( # change to transmute when finished checking
+   #mutate( # change to transmute when finished checking
   transmute(
     LopNr = LopNr,
     shf_source = case_when(
@@ -63,8 +63,8 @@ rsdata <- rsdata %>%
       VARDGIVARE == 1 | LOCATION == "IX_SV" ~ "In-patient"
     ),
     shf_centretype = case_when(
-      TYPEID == 1 | ORG_UNIT_LEVEL_NAME %in% c("Avdelning", "Fristående hjärtmottagning", "Mottagning") ~ "Hospital",
-      TYPEID == 2 | ORG_UNIT_LEVEL_NAME %in% c("Vårdcentral") ~ "Primary care"
+      TYPEID == 1 | ORG_UNIT_LEVEL_NAME %in% c("Avdelning", "Fristaende hjartmottagning", "Mottagning") ~ "Hospital",
+      TYPEID == 2 | ORG_UNIT_LEVEL_NAME %in% c("Vardcentral") ~ "Primary care"
     ),
 
     shf_smoking = case_when(
