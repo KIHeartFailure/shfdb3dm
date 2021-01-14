@@ -436,7 +436,8 @@ rsdata <- create_sosvar(
   diavar = HDIA,
   type = "out",
   name = "hospnoncv",
-  diakod = " [A-F]| G(?!45)| H| J(?!81)| K(?!761)| [L-Q]| R(?!57)| [S-Z]",
+  diakod = " I| J81| K761| G45| R57",
+  diakodneg = TRUE, 
   censdate = censdtm,
   valsclass = "num",
   warnings = FALSE

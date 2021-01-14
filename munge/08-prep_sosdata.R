@@ -17,7 +17,7 @@ svall <- svall %>%
     list(~ tolower(.))
   )
 
-svall <- prep_sosdata(svall, utdatum = FALSE)
+svall <- prep_sosdata(svall, utdatum = FALSE, evar = "ekod")
 
 svall2 <- svall %>%
   filter(!is.na(INDATUM) & !is.na(UTDATUM)) %>% # 9 obs have missing for either
