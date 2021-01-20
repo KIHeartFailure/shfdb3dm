@@ -15,7 +15,7 @@ by = c("LopNr" = "lopnr")
   mutate(tmp_migrationdtm = ymd(MigrationDatum)) %>%
   filter(
     tmp_migrationdtm > shf_indexdtm,
-    tmp_migrationdtm <= ymd("2018-12-31")
+    tmp_migrationdtm <= ymd("2019-12-31")
   ) %>%
   group_by(LopNr, shf_indexdtm) %>%
   slice(1) %>%
@@ -25,6 +25,11 @@ by = c("LopNr" = "lopnr")
 rsdata <- left_join(rsdata,
   migration,
   by = c("LopNr", "shf_indexdtm")
+)
+
+dors <- bind_rows(
+  dors,
+  dors2
 )
 
 
@@ -96,7 +101,7 @@ rsdata <- rsdata %>%
   mutate(
     censdtm = coalesce(
       pmin(sos_deathdtm, tmp_migrationdtm, na.rm = TRUE),
-      ymd("2018-12-31")
+      ymd("2019-12-31")
     ),
     censdtm = pmin(censdtm, tmp_hfsosdtm, na.rm = TRUE),
     censdtm = pmin(censdtm, tmp_hfrsdtm, na.rm = TRUE)

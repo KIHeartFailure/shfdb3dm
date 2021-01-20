@@ -49,4 +49,4 @@ rsdata <- rsdata %>%
   mutate_at(vars(starts_with("sos_out_death")), ynfac) %>%
   mutate(sos_out_hospdeathscd = ifelse(sos_out_deathscd == "Yes" | sos_out_hospscd == "Yes", 1, 0), 
          sos_out_hospdeathscd = ynfac(sos_out_hospdeathscd)) %>%
-  select(-sos_out_deathscd, -sos_out_hospscd, -censdtm, -sos_deathdtm)
+  select(-sos_out_deathscd, -sos_out_hospscd, -sos_deathdtm)

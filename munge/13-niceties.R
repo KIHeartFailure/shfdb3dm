@@ -7,7 +7,7 @@ rsdata <- rsdata %>%
     contains("shf_ef"),
     contains("shf_"),
     contains("scb_"),
-    #censdtm,
+    censdtm,
     sos_durationhf,
     contains("sos_com"),
     contains("sos_out"),

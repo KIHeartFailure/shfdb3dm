@@ -1,23 +1,17 @@
 
 # Link hospital visits ----------------------------------------------------
 
+sv3 <- sv3 %>%
+  rename(HDIA = hdia)
+
 svall <- bind_rows(
   sv1,
-  sv2
+  sv2, 
+  sv3
 ) %>%
   select(-starts_with("OPD"), -KON, -ALDER, -Fall, -VTID, -UTSATT, -INDATUMA, -UTDATUMA)
 
-svall <- svall %>%
-  rename_at(
-    vars(starts_with("op")),
-    list(~ toupper(.))
-  ) %>%
-  rename_at(
-    vars(starts_with("EKOD")),
-    list(~ tolower(.))
-  )
-
-svall <- prep_sosdata(svall, utdatum = FALSE, evar = "ekod")
+svall <- prep_sosdata(svall, utdatum = FALSE, opvar = "op")
 
 svall2 <- svall %>%
   filter(!is.na(INDATUM) & !is.na(UTDATUM)) %>% # 9 obs have missing for either
@@ -59,7 +53,8 @@ svalllink <- svalllink %>%
     INDATUM = min(INDATUM),
     UTDATUM = max(UTDATUM),
     PVARD = stringr::str_squish(str_c(PVARD, collapse = " ")),
-    MVO = stringr::str_squish(str_c(MVO, collapse = " "))
+    MVO = stringr::str_squish(str_c(MVO, collapse = " ")), 
+    .groups = "drop"
   ) %>%
   ungroup()
 
@@ -70,29 +65,19 @@ svalllink <- bind_rows(
   select(-link, -link2, -n, -sosdtm) %>%
   mutate(AR = year(UTDATUM))
 
-# koll <- svalllink %>% filter(LopNr == "100474")
-
 # Merge sos data ----------------------------------------------------------
+
+ov3 <- ov3 %>%
+  rename(HDIA = hdia)
 
 ovall <- bind_rows(
   ov1,
-  ov2
+  ov2,
+  ov3
 ) %>%
   select(-KON, -ALDER, -Fall, -INDATUMA)
 
-ovall <- ovall %>%
-  rename_at(
-    vars(starts_with("op")),
-    list(~ toupper(.))
-  ) %>%
-  rename_at(
-    vars(starts_with("EKOD")),
-    list(~ tolower(.))
-  )
-
-# koll <- ovall %>% filter(is.na(INDATUM)) %>% select(AR, INDATUMA)
-
-ovall <- prep_sosdata(ovall, utdatum = FALSE)
+ovall <- prep_sosdata(ovall, utdatum = FALSE, opvar = "op")
 
 patreg <- bind_rows(
   svalllink %>% mutate(sos_source = "sv"),
