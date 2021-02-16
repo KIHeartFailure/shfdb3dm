@@ -710,7 +710,7 @@ hfhosp <- inner_join(
   by = "LopNr"
 ) %>%
   mutate(tmp_sosdtm = coalesce(UTDATUM, INDATUM)) %>%
-  filter(tmp_sosdtm < shf_indexdtm) %>%
+  filter(tmp_sosdtm <= shf_indexdtm) %>%
   group_by(LopNr, shf_indexdtm) %>%
   arrange(tmp_sosdtm) %>%
   slice(n()) %>%
