@@ -9,6 +9,7 @@ rsdata <- rsdata %>%
     contains("scb_"),
     censdtm,
     sos_durationhf,
+    sos_prevhosphf,
     contains("sos_com"),
     contains("sos_out"),
     sos_deathcause

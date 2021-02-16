@@ -139,25 +139,25 @@ rsdata <- rsdata %>%
     ),
     shf_ef = factor(shf_ef, labels = c(">=50", "40-49", "30-39", "<30")),
 
-    shf_weight = coalesce(WEIGHT, VIKT),
+    shf_weight = coalesce(WEIGHT_24H, WEIGHT, VIKT),
     shf_height = coalesce(HEIGHT, LANGD),
     shf_bmi = round(shf_weight / (shf_height / 100)^2, 1),
 
     # laboratory
-    shf_bpsys = coalesce(BP_SYSTOLIC, BTSYSTOLISKT),
-    shf_bpdia = coalesce(BP_DIASTOLIC, BTDIASTOLISKT),
+    shf_bpsys = coalesce(BP_SYSTOLIC_24H, BP_SYSTOLIC, BTSYSTOLISKT),
+    shf_bpdia = coalesce(BP_DIASTOLIC_24H, BP_DIASTOLIC, BTDIASTOLISKT),
     shf_map = (shf_bpsys + 2 * shf_bpdia) / 3,
-    shf_heartrate = coalesce(HJARTFREKVENS, HEART_FREQUENCY),
-    shf_hb = coalesce(HB, B_HB),
-    shf_potassium = coalesce(KALIUM, S_POTASSIUM),
-    shf_sodium = coalesce(NATRIUM, S_SODIUM),
-    shf_creatinine = coalesce(S_CREATININE, KREATININ),
+    shf_heartrate = coalesce(HEART_FREQUENCY_24H, HEART_FREQUENCY, HJARTFREKVENS),
+    shf_hb = coalesce(B_HB_24H, B_HB, HB),
+    shf_potassium = coalesce(S_POTASSIUM_24H, S_POTASSIUM, KALIUM),
+    shf_sodium = coalesce(S_SODIUM_24H, S_SODIUM, NATRIUM),
+    shf_creatinine = coalesce(S_CREATININE_24H, S_CREATININE, KREATININ),
     # eGFR according to CKD-EPI
     tmp_sex = recode(shf_sex, "Male" = 1, "Female" = 0),
     tmp_ethnicity = 0, # ethnicity is unknown. therefore all are considered not "African-American"
     shf_gfrckdepi = nephro::CKDEpi.creat(shf_creatinine / 88.4, tmp_sex, shf_age, tmp_ethnicity),
-    shf_ntprobnp = coalesce(PROBNP, NT_PROBNP),
-    shf_bnp = coalesce(BNP_old, BNP),
+    shf_ntprobnp = coalesce(NT_PROBNP_24H, NT_PROBNP, PROBNP),
+    shf_bnp = coalesce(BNP_24H, BNP, BNP_old),
     shf_transferrin = P_TRANSFERRIN,
     shf_ferritin = S_FERRITIN,
 

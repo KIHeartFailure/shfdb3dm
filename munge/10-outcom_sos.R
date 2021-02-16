@@ -40,7 +40,7 @@ rsdata <- create_sosvar(
   type = "com",
   name = "ihd",
   diakod = " 41[0-4]| I2[0-5]",
-  #stoptime = -5 * 365.25,
+  # stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -54,7 +54,7 @@ rsdata <- create_sosvar(
   type = "com",
   name = "mi",
   diakod = " 410| 412| I21| I22| I252",
-  #stoptime = -5 * 365.25,
+  # stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -82,7 +82,7 @@ rsdata <- create_sosvar(
   type = "com",
   name = "pci",
   opkod = " FNG",
-  #stoptime = -5 * 365.25,
+  # stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -98,7 +98,7 @@ rsdata <- create_sosvar(
   name = "cabg",
   diakod = " Z951| Z955",
   opkod = " FNA| FNB| FNC| FND| FNE| FNF| FNH",
-  #stoptime = -5 * 365.25,
+  # stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -154,7 +154,7 @@ rsdata <- create_sosvar(
   type = "com",
   name = "stroke",
   diakod = " 43[0-4]| 438| I6[0-4]| I69[0-4]",
-  #stoptime = -5 * 365.25,
+  # stoptime = -5 * 365.25,
   valsclass = "num",
   warnings = FALSE
 )
@@ -437,7 +437,7 @@ rsdata <- create_sosvar(
   type = "out",
   name = "hospnoncv",
   diakod = " I| J81| K761| G45| R57",
-  diakodneg = TRUE, 
+  diakodneg = TRUE,
   censdate = censdtm,
   valsclass = "num",
   warnings = FALSE
@@ -669,28 +669,65 @@ rm(metaout)
 
 # Time first hf diagnosis -------------------------------------------------
 
-hfdiag <-
-  inner_join(rsdata %>% select(LopNr, shf_indexdtm),
-    hfsos, # created in 09-endtime.R
-    by = "LopNr"
-  ) %>%
-  mutate(tmp_sosdate = coalesce(UTDATUM, INDATUM)) %>%
+hfdiag <- inner_join(
+  rsdata %>% select(LopNr, shf_indexdtm),
+  hfsos, # created in 09-endtime.R
+  by = "LopNr"
+) %>%
+  mutate(tmp_sosdtm = coalesce(UTDATUM, INDATUM)) %>%
   group_by(LopNr, shf_indexdtm) %>%
-  arrange(tmp_sosdate) %>%
+  arrange(tmp_sosdtm) %>%
   slice(1) %>%
   ungroup() %>%
-  select(LopNr, shf_indexdtm, tmp_sosdate)
+  select(LopNr, shf_indexdtm, tmp_sosdtm)
 
-rsdata <- left_join(rsdata,
+rsdata <- left_join(
+  rsdata,
   hfdiag,
   by = c("LopNr", "shf_indexdtm")
 ) %>%
   mutate(
-    sos_durationhf = as.numeric(shf_indexdtm - tmp_sosdate),
+    sos_durationhf = as.numeric(shf_indexdtm - tmp_sosdtm),
     sos_durationhf = case_when(
       casecontrol == "Control" ~ NA_real_,
       is.na(sos_durationhf) | sos_durationhf < 0 ~ 0,
       TRUE ~ sos_durationhf
     )
   ) %>%
-  select(-tmp_sosdate)
+  select(-tmp_sosdtm)
+
+
+# Time since last HF hospitalization --------------------------------------
+
+hfhospsos <- patreg %>%
+  filter(sos_source == "sv") %>%
+  mutate(tmp_hfhospsos = stringr::str_detect(HDIA, " I110| I130| I132| I255| I420| I423| I425| I426| I427| I428| I429| I43| I50| J81| K761| R57| 414W| 425E| 425F| 425G| 425H| 425W| 425X| 428")) %>%
+  filter(tmp_hfhospsos)
+
+hfhosp <- inner_join(
+  rsdata %>% select(LopNr, shf_indexdtm),
+  hfhospsos,
+  by = "LopNr"
+) %>%
+  mutate(tmp_sosdtm = coalesce(UTDATUM, INDATUM)) %>%
+  filter(tmp_sosdtm < shf_indexdtm) %>%
+  group_by(LopNr, shf_indexdtm) %>%
+  arrange(tmp_sosdtm) %>%
+  slice(n()) %>%
+  ungroup() %>%
+  select(LopNr, shf_indexdtm, tmp_sosdtm)
+
+rsdata <- left_join(
+  rsdata,
+  hfhosp,
+  by = c("LopNr", "shf_indexdtm")
+) %>%
+  mutate(
+    sos_prevhosphf = as.numeric(shf_indexdtm - tmp_sosdtm),
+    sos_prevhosphf = case_when(
+      casecontrol == "Control" ~ NA_real_,
+      is.na(sos_prevhosphf) ~ NA_real_,
+      TRUE ~ sos_prevhosphf
+    )
+  ) %>%
+  select(-tmp_sosdtm)

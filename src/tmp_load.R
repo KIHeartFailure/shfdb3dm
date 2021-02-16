@@ -20,17 +20,18 @@ source("./munge/07-lisa_scb.R")
 save(file = "./data/rsdata_rs_scb.RData", list = c("rsdata", "flow", "migration"))
 
 ProjectTemplate::reload.project()
-load(file = "./data/rsdata_rs_scb.RData")
-load("./data/rawData_sos.RData")
+load("./data/rawData_sossv.RData")
+load("./data/rawData_sosov.RData")
 
 # run 08
 source("./munge/08-prep_sosdata.R")
 
-save(file = "./data/patreg.RData", list = c("patreg", "dors"))
+save(file = "./data/patreg.RData", list = c("patreg"))
 
 ProjectTemplate::reload.project()
 load(file = "./data/rsdata_rs_scb.RData")
 load(file = "./data/patreg.RData")
+load("./data/rawData_sosdors.RData")
 
 # run 09-14
 source("./munge/09-endtime.R")
