@@ -24,3 +24,11 @@ Since the data is not available the code can not be run as is.
 ## Website
 
 https://kiheartfailure.github.io/shfdb3
+
+## Cite 
+
+<!-- badges: start -->
+
+[![Cite](https://zenodo.org/badge/DOI/10.5281/zenodo.4544289.svg)](https://zenodo.org/record/4544289#.YCzfIGhKiUl)
+
+<!-- badges: end -->
