@@ -29,7 +29,7 @@ yncomb <- function(oldvar, newvar) {
 }
 
 rsdata <- rsdata %>%
-   #mutate( # change to transmute when finished checking
+  # mutate( # change to transmute when finished checking
   transmute(
     LopNr = LopNr,
     shf_source = case_when(
@@ -38,7 +38,11 @@ rsdata <- rsdata %>%
     ),
     shf_source = factor(shf_source, labels = c("Old SHF", "New SHF migrated from old SHF", "New SHF")),
 
-    shf_indexdtm = coalesce(DTMUT, DATE_DISCHARGE, DTMIN, d_DATE_FOR_ADMISSION),
+    tmp_indexstartdtm = coalesce(DTMIN, d_DATE_FOR_ADMISSION),
+    tmp_indexstopdtm = coalesce(DTMUT, DATE_DISCHARGE),
+    shf_indexdtm = coalesce(tmp_indexstopdtm, tmp_indexstartdtm),
+    shf_indexhosptime = as.numeric(tmp_indexstopdtm - tmp_indexstartdtm),
+    shf_indexhosptime = replace(shf_indexhosptime, shf_indexhosptime < 0, NA),
     shf_indexyear = year(shf_indexdtm),
     shf_sex = case_when(
       SEX == "FEMALE" | GENDER == 2 ~ "Female",
