@@ -4,7 +4,7 @@ flow <- c("No of posts in SwedeHF", nrow(rsdata))
 # remove duplicated indexdates
 rsdata <- rsdata %>%
   group_by(LopNr, shf_indexdtm) %>%
-  arrange(shf_source) %>%
+  arrange(shf_source) %>% # should change this so NEW RS is selected (slice(n()))
   slice(1) %>% # remove 621 observations, se check_duplicates_rs_200228.R
   ungroup()
 

@@ -325,7 +325,7 @@ rsdata <- create_sosvar(
   patid = LopNr,
   indexdate = shf_indexdtm,
   sosdate = INDATUM,
-  diavar = DIA_all,
+  diavar = HDIA,
   type = "com",
   name = "cancer3y",
   diakod = " C",
