@@ -731,3 +731,59 @@ rsdata <- left_join(
     )
   ) %>%
   select(-tmp_sosdtm)
+
+
+# Location defined from NPR -----------------------------------------------
+
+hfhosp <- inner_join(
+  rsdata %>% filter(casecontrol == "Case") %>% select(LopNr, shf_indexdtm, shf_indexhosptime),
+  patreg %>% filter(sos_source == "sv"),
+  by = "LopNr"
+) %>%
+  mutate(
+    tmp_indexstartdtm = if_else(!is.na(shf_indexhosptime), shf_indexdtm - shf_indexhosptime, shf_indexdtm),
+    tmp_locationhf = 1,
+    tmp_hfhospsos = stringr::str_detect(HDIA, " I110| I130| I132| I255| I420| I423| I425| I426| I427| I428| I429| I43| I50| J81| K761| R57| 414W| 425E| 425F| 425G| 425H| 425W| 425X| 428")
+  ) %>%
+  filter(tmp_hfhospsos &
+    (tmp_indexstartdtm >= INDATUM & tmp_indexstartdtm <= UTDATUM |
+      shf_indexdtm >= INDATUM & shf_indexdtm <= UTDATUM)) %>%
+  group_by(LopNr, shf_indexdtm) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(LopNr, shf_indexdtm, tmp_locationhf)
+
+allhosp <- inner_join(
+  rsdata %>% filter(casecontrol == "Case") %>% select(LopNr, shf_indexdtm, shf_indexhosptime),
+  patreg %>% filter(sos_source == "sv"),
+  by = "LopNr"
+) %>%
+  mutate(
+    tmp_indexstartdtm = if_else(!is.na(shf_indexhosptime), shf_indexdtm - shf_indexhosptime, shf_indexdtm),
+    tmp_locationany = 1
+  ) %>%
+  filter(tmp_indexstartdtm >= INDATUM & tmp_indexstartdtm <= UTDATUM |
+    shf_indexdtm >= INDATUM & shf_indexdtm <= UTDATUM) %>%
+  group_by(LopNr, shf_indexdtm) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(LopNr, shf_indexdtm, tmp_locationany)
+
+hospall <- full_join(hfhosp, allhosp, by = c("LopNr", "shf_indexdtm")) %>%
+  mutate(sos_location = if_else(!is.na(tmp_locationhf), 1, 2)) %>%
+  select(-starts_with("tmp_"))
+
+rsdata <- left_join(
+  rsdata,
+  hospall,
+  by = c("LopNr", "shf_indexdtm")
+) %>%
+  mutate(
+    sos_location = factor(case_when(
+      !is.na(sos_location) ~ sos_location,
+      casecontrol == "Case" ~ 3,
+      TRUE ~ NA_real_
+    ),
+    levels = 1:3, labels = c("HF in-patient", "Other in-patient", "Out-patient")
+    )
+  )
