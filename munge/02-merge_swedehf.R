@@ -156,10 +156,11 @@ rsdata <- rsdata %>%
     shf_potassium = coalesce(S_POTASSIUM_24H, S_POTASSIUM, KALIUM),
     shf_sodium = coalesce(S_SODIUM_24H, S_SODIUM, NATRIUM),
     shf_creatinine = coalesce(S_CREATININE_24H, S_CREATININE, KREATININ),
-    # eGFR according to CKD-EPI
-    tmp_sex = recode(shf_sex, "Male" = 1, "Female" = 0),
-    tmp_ethnicity = 0, # ethnicity is unknown. therefore all are considered not "African-American"
-    shf_gfrckdepi = nephro::CKDEpi.creat(shf_creatinine / 88.4, tmp_sex, shf_age, tmp_ethnicity),
+    # eGFR according to CKD-EPI 2021 https://www.nejm.org/doi/full/10.1056/NEJMoa2102953
+    tmp_k = if_else(shf_sex == "Female", 0.7, 0.9),
+    tmp_a = if_else(shf_sex == "Female", -0.241, -0.302),
+    tmp_add = if_else(shf_sex == "Female", 1.012, 1),
+    shf_gfrckdepi = 142 * pmin(shf_creatinine / 88.4 / tmp_k, 1) ^ tmp_a * pmax(shf_creatinine / 88.4 / tmp_k, 1) ^ -1.200 * 0.9938 ^ shf_age * tmp_add,
     shf_ntprobnp = coalesce(NT_PROBNP_24H, NT_PROBNP, PROBNP),
     shf_bnp = coalesce(BNP_24H, BNP, BNP_old),
     shf_transferrin = P_TRANSFERRIN,
