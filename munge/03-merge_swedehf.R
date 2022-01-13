@@ -10,12 +10,6 @@ oldrs <- oldrs %>%
     ARNI_old = ARNI
   )
 
-newrs <- left_join(
-  newrs,
-  enheter %>% select(ORG_UNIT_REFERENCE, ORG_UNIT_LEVEL_NAME),
-  by = c("HEALTHCAREUNIT" = "ORG_UNIT_REFERENCE")
-)
-
 rsdata <- bind_rows(
   newrs %>% mutate(source = 3),
   oldrs %>% mutate(source = 1)
@@ -66,11 +60,13 @@ rsdata <- rsdata %>%
       VARDGIVARE %in% c(2, 3) | LOCATION == "IX_OV" | TYPE %in% c("FOLLOWUP", "YEARLY_FOLLOWUP") ~ "Out-patient",
       VARDGIVARE == 1 | LOCATION == "IX_SV" ~ "In-patient"
     ),
+    shf_centre = coalesce(CENTRENAME, sjhnewrs), 
+    shf_centreregion = coalesce(LANDSTING, regionnewrs), 
     shf_centretype = case_when(
       TYPEID == 1 | ORG_UNIT_LEVEL_NAME %in% c("Avdelning", "Fristaende hjartmottagning", "Mottagning") ~ "Hospital",
       TYPEID == 2 | ORG_UNIT_LEVEL_NAME %in% c("Vardcentral") ~ "Primary care"
     ),
-
+    
     shf_smoking = case_when(
       ROKNING == 1 | ROKVANOR == 0 | SMOKING_HABITS == "NEVER" ~ "Never",
       ROKNING == 2 | ROKVANOR %in% c(1, 2) | SMOKING_HABITS %in% c("FORMER_SMOKER", "STOP_LESS_6_MONTHS", "STOP_MORE_6_MONTHS") ~ "Former",

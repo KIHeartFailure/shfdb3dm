@@ -20,6 +20,8 @@ rsdata <- rsdata %>%
 rsdata <- rsdata %>%
   mutate_if(is.character, as.factor) %>%
   mutate(
+    shf_centre = as.character(shf_centre), 
+    shf_centreregion = as.character(shf_centreregion), 
     sos_deathcause = as.character(sos_deathcause),
     scb_region = as.character(scb_region)
   )
