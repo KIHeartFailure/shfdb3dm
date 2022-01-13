@@ -13,7 +13,29 @@ rsdata <- left_join(
 
 lisa <- lisa %>%
   mutate(
-    scb_region = Lan,
+    scb_region = case_when(
+      Lan == "01" ~ "Stockholm",
+      Lan == "03" ~ "Uppsala",
+      Lan == "04" ~ "Sodermanland",
+      Lan == "05" ~ "Ostergotland",
+      Lan == "06" ~ "Jonkoping",
+      Lan == "07" ~ "Kronoberg",
+      Lan == "08" ~ "Kalmar",
+      Lan == "09" ~ "Gotland",
+      Lan == "10" ~ "Blekinge",
+      Lan == "12" ~ "Skane",
+      Lan == "13" ~ "Halland",
+      Lan == "14" ~ "Vastra Gotaland",
+      Lan == "17" ~ "Varmland",
+      Lan == "18" ~ "Orebro",
+      Lan == "19" ~ "Vastmanland",
+      Lan == "20" ~ "Dalarna",
+      Lan == "21" ~ "Gavleborg",
+      Lan == "22" ~ "Vasternorrland",
+      Lan == "23" ~ "Jamtland",
+      Lan == "24" ~ "Vasterbotten",
+      Lan == "25" ~ "Norrbotten"
+    ),
     scb_maritalstatus = case_when(
       Civil %in% c("A", "EP", "OG", "S", "SP") ~ "Single/widowed/divorced",
       Civil %in% c("G", "RP") ~ "Married"
@@ -42,7 +64,7 @@ rsdata <- left_join(
 inc <- rsdata %>%
   group_by(LopNr, shf_indexyear) %>%
   slice(1) %>%
-  ungroup () %>%
+  ungroup() %>%
   group_by(shf_indexyear) %>%
   summarise(incsum = list(enframe(quantile(scb_dispincome,
     probs = c(0.33, 0.66),
