@@ -8,7 +8,7 @@ rsdata <- rsdata %>%
     shf_age = clean_outliers(shf_age, 0, 120),
     shf_weight = clean_outliers(shf_weight, 10, 399),
     shf_height = clean_outliers(shf_height, 30, 299),
-    shf_bmi = clean_outliers(shf_bmi, 8, 80),
+    # bmi cleaned in imputebmi
     shf_bpdia = clean_outliers(shf_bpdia, 0, 150),
     shf_bpsys = ifelse(shf_bpsys < 40 | shf_bpsys > 300 | shf_bpsys < shf_bpdia, NA, shf_bpsys),
     shf_map = clean_outliers(shf_map, 40, 250),

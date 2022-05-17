@@ -60,13 +60,13 @@ rsdata <- rsdata %>%
       VARDGIVARE %in% c(2, 3) | LOCATION == "IX_OV" | TYPE %in% c("FOLLOWUP", "YEARLY_FOLLOWUP") ~ "Out-patient",
       VARDGIVARE == 1 | LOCATION == "IX_SV" ~ "In-patient"
     ),
-    shf_centre = coalesce(CENTRENAME, sjhnewrs), 
-    shf_centreregion = coalesce(LANDSTING, regionnewrs), 
+    shf_centre = coalesce(CENTRENAME, sjhnewrs),
+    shf_centreregion = coalesce(LANDSTING, regionnewrs),
     shf_centretype = case_when(
       TYPEID == 1 | ORG_UNIT_LEVEL_NAME %in% c("Avdelning", "Fristaende hjartmottagning", "Mottagning") ~ "Hospital",
       TYPEID == 2 | ORG_UNIT_LEVEL_NAME %in% c("Vardcentral") ~ "Primary care"
     ),
-    
+
     shf_smoking = case_when(
       ROKNING == 1 | ROKVANOR == 0 | SMOKING_HABITS == "NEVER" ~ "Never",
       ROKNING == 2 | ROKVANOR %in% c(1, 2) | SMOKING_HABITS %in% c("FORMER_SMOKER", "STOP_LESS_6_MONTHS", "STOP_MORE_6_MONTHS") ~ "Former",
@@ -141,7 +141,6 @@ rsdata <- rsdata %>%
 
     shf_weight = coalesce(WEIGHT_24H, WEIGHT, VIKT),
     shf_height = coalesce(HEIGHT, LANGD),
-    shf_bmi = round(shf_weight / (shf_height / 100)^2, 1),
 
     # laboratory
     shf_bpsys = coalesce(BP_SYSTOLIC_24H, BP_SYSTOLIC, BTSYSTOLISKT),
@@ -156,7 +155,7 @@ rsdata <- rsdata %>%
     tmp_k = if_else(shf_sex == "Female", 0.7, 0.9),
     tmp_a = if_else(shf_sex == "Female", -0.241, -0.302),
     tmp_add = if_else(shf_sex == "Female", 1.012, 1),
-    shf_gfrckdepi = 142 * pmin(shf_creatinine / 88.4 / tmp_k, 1) ^ tmp_a * pmax(shf_creatinine / 88.4 / tmp_k, 1) ^ -1.200 * 0.9938 ^ shf_age * tmp_add,
+    shf_gfrckdepi = 142 * pmin(shf_creatinine / 88.4 / tmp_k, 1)^tmp_a * pmax(shf_creatinine / 88.4 / tmp_k, 1)^-1.200 * 0.9938^shf_age * tmp_add,
     shf_ntprobnp = coalesce(NT_PROBNP_24H, NT_PROBNP, PROBNP),
     shf_bnp = coalesce(BNP_24H, BNP, BNP_old),
     shf_transferrin = P_TRANSFERRIN,
@@ -184,7 +183,11 @@ rsdata <- rsdata %>%
         LOOP_DIUR %in% c("LOOP_DIURETIC", "LOOP_DIURETIC_AND_THIAZIDES", "YES") ~ "Yes",
       TRUE ~ "No" # same as: DIURETIKA %in% c(0, 2) | LOOP_DIUR %in% c("NO", "THIAZIDES") ~ "No"
     ),
-
+    shf_loopdiureticsub = case_when(
+      is.na(shf_loopdiuretic) | shf_loopdiuretic == "No" ~ NA_character_,
+      LOOP_DIUR_TYPE == "BUMETANID" ~ "Bumetanid", 
+      LOOP_DIUR_TYPE == "FUROSEMID" ~ "Furosemid",
+      LOOP_DIUR_TYPE == "TORESAMID" ~ "Toresamid"),
     shf_loopdiureticdose = if_else(!is.na(shf_loopdiuretic) & shf_loopdiuretic == "Yes",
       coalesce(
         LOOP_DIUR_DOSE_BUMETANID,
@@ -408,6 +411,8 @@ rsdata <- rsdata %>%
       UPPF_VARDNIVA == 3 | FOLLOWUP_HC_LEVEL == "OTHER" ~ 3
     ),
     shf_followuplocation = factor(shf_followuplocation, labels = c("Hospital", "Primary care", "Other")),
+
+    shf_qol = coalesce(LIFEQUALITY_SCORE, LIVSKVALITET),
 
     # outcomes
     shf_deathdtm = coalesce(d_befdoddtm, befdoddtm),
