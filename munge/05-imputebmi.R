@@ -25,8 +25,16 @@ rsdata <- left_join(rsdata,
 rsdata <- rsdata %>%
   mutate(shf_age_catimp = case_when(
     shf_age < 30 ~ 30,
-    shf_age > 90 ~ 90,
-    TRUE ~ shf_age
+    shf_age < 40 ~ 40,
+    shf_age < 50 ~ 50,
+    shf_age < 60 ~ 60,
+    shf_age < 65 ~ 65,
+    shf_age < 70 ~ 70,
+    shf_age < 75 ~ 75,
+    shf_age < 80 ~ 80,
+    shf_age < 85 ~ 85,
+    shf_age < 90 ~ 90,
+    shf_age >= 90 ~ 95
   ))
 
 # median within sex and age
